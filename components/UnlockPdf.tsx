@@ -32,14 +32,11 @@ export default function UnlockPdf() {
         throw new Error("Failed to unlock PDF");
       }
 
-      // Assuming backend returns JSON with file blob URL and code
-      // If backend returns file blob directly, adjust accordingly
       const contentType = res.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
         const data = await res.json();
         setFoundCode(data.code);
 
-        // To download file from URL returned by backend
         const fileUrl = data.file_url;
         const a = document.createElement("a");
         a.href = fileUrl;
@@ -48,7 +45,6 @@ export default function UnlockPdf() {
         a.click();
         a.remove();
       } else {
-        // If backend returns file blob directly
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -67,13 +63,57 @@ export default function UnlockPdf() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Unlock PDF</h2>
-      <input type="file" accept="application/pdf" onChange={handleFileChange} />
-      <button type="submit" disabled={loading}>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md
+                 flex flex-col gap-6
+                 sm:p-8 sm:mt-16"
+    >
+      <h2 className="text-2xl font-semibold text-gray-800 text-center">
+        Unlock PDF
+      </h2>
+
+      <div>
+        <label
+          htmlFor="file-upload"
+          className="block mb-2 text-sm font-medium text-gray-700"
+        >
+          Select Locked PDF File
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept="application/pdf"
+          onChange={handleFileChange}
+          className="block w-full text-sm text-gray-600
+                     file:mr-4 file:py-2 file:px-4
+                     file:rounded-md file:border-0
+                     file:text-sm file:font-semibold
+                     file:bg-green-50 file:text-green-700
+                     hover:file:bg-green-100
+                     cursor-pointer"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className={`w-full py-3 text-white font-semibold rounded-md
+                    transition
+                    ${
+                      loading
+                        ? "bg-green-300 cursor-not-allowed"
+                        : "bg-green-600 hover:bg-green-700"
+                    }`}
+      >
         {loading ? "Unlocking..." : "Unlock PDF"}
       </button>
-      {foundCode && <p>Found code: <strong>{foundCode}</strong></p>}
+
+      {foundCode && (
+        <p className="text-center text-gray-700 text-lg">
+          Found code: <strong>{foundCode}</strong>
+        </p>
+      )}
     </form>
   );
 }

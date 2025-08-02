@@ -36,10 +36,8 @@ export default function LockPdf() {
         throw new Error("Failed to lock PDF");
       }
 
-      // Assuming backend returns the file as a blob (or a URL)
       const blob = await res.blob();
 
-      // Trigger download
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -56,17 +54,69 @@ export default function LockPdf() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Lock PDF</h2>
-      <input type="file" accept="application/pdf" onChange={handleFileChange} />
-      <input
-        type="text"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder="6-digit code"
-        maxLength={6}
-      />
-      <button type="submit" disabled={loading}>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md
+                 flex flex-col gap-6
+                 sm:p-8 sm:mt-16"
+    >
+      <h2 className="text-2xl font-semibold text-gray-800 text-center">
+        Lock PDF
+      </h2>
+
+      <div>
+        <label
+          htmlFor="file-upload"
+          className="block mb-2 text-sm font-medium text-gray-700"
+        >
+          Select PDF File
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept="application/pdf"
+          onChange={handleFileChange}
+          className="block w-full text-sm text-gray-600
+                     file:mr-4 file:py-2 file:px-4
+                     file:rounded-md file:border-0
+                     file:text-sm file:font-semibold
+                     file:bg-blue-50 file:text-blue-700
+                     hover:file:bg-blue-100
+                     cursor-pointer"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor="code-input"
+          className="block mb-2 text-sm font-medium text-gray-700"
+        >
+          6-digit code
+        </label>
+        <input
+          id="code-input"
+          type="text"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="Enter 6-digit code"
+          maxLength={6}
+          className="w-full px-4 py-2 border border-gray-300 rounded-md
+                     focus:outline-none focus:ring-2 focus:ring-blue-500
+                     focus:border-transparent transition"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className={`w-full py-3 text-white font-semibold rounded-md
+                    transition
+                    ${
+                      loading
+                        ? "bg-blue-300 cursor-not-allowed"
+                        : "bg-blue-600 hover:bg-blue-700"
+                    }`}
+      >
         {loading ? "Locking..." : "Lock PDF"}
       </button>
     </form>
