@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import formidable from "formidable";
+import { Formidable, File } from "formidable";
 import fs from "fs";
 
 export const config = {
@@ -13,15 +13,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).end("Method Not Allowed");
   }
 
-  const form = new formidable.IncomingForm();
+  const form = new Formidable();
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
       return res.status(500).json({ error: "Form parse error" });
     }
 
-    let file: formidable.File | undefined;
-    let code = fields.code as string | undefined;
+    let file: File | undefined;
+    const code = fields.code as string | undefined;
     
             if (Array.isArray(files.file)) {
                 // If multiple files uploaded, take the first one or handle accordingly
@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Native fetch in Node.js 18+
       const backendRes = await fetch("http://localhost:8080/lock", {
         method: "POST",
-        body: formData as any, // TypeScript workaround
+        body: formData! as any, // TypeScript workaround
       });
 
       if (!backendRes.ok) {
